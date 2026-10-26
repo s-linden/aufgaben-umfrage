@@ -68,7 +68,10 @@ const Backend = (() => {
             at: firebase.firestore.FieldValue.serverTimestamp(),
           });
         } catch (e) {
-          throw new Error(e.code === 'permission-denied' ? 'closed' : e.message);
+          // Code und Originaltext mitgeben, damit die Handy-Ansicht die genaue Ursache zeigen kann.
+          const err = new Error(e.message);
+          err.code = e.code || 'unbekannt';
+          throw err;
         }
       },
     };
@@ -107,7 +110,7 @@ const Backend = (() => {
 
     function vote(code, id, auswahl) {
       const st = read(code);
-      if (!st || st.status !== 'open') throw new Error('closed');
+      if (!st || st.status !== 'open') throw Object.assign(new Error('Umfrage beendet'), { code: 'permission-denied' });
       st.stimmen[id] = auswahl;
       write(code, st);
     }
@@ -144,7 +147,7 @@ const Backend = (() => {
             const teile = a.teile.filter(() => Math.random() < 0.4).map(([t]) => a.nr + t);
             auswahl.push(...(teile.length ? teile : [a.nr]));
           }
-          if (auswahl.length) vote(code, 'fake-' + Math.random().toString(36).slice(2, 10), auswahl);
+          vote(code, 'fake-' + Math.random().toString(36).slice(2, 10), auswahl.length ? auswahl : [KEINE]);
         }
       },
     };

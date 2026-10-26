@@ -76,6 +76,18 @@
       }
       $('results').appendChild(row);
     }
+
+    // „Keine“ immer als letzte Zeile, ohne Teilaufgaben.
+    const k = Auswertung.keine(stimmen);
+    const row = document.createElement('div');
+    row.className = 'result keine' + (k === 0 ? ' none' : '');
+    row.innerHTML = `
+      <div class="result-head">
+        <span class="result-nr">Keine</span>
+        <span class="bar-track"><span class="bar-fill" style="width:${pct(k)}%"></span></span>
+        <span class="result-count">${k}</span>
+      </div>`;
+    $('results').appendChild(row);
   }
 
   function render() {

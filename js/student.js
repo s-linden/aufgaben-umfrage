@@ -55,10 +55,30 @@
         formelnEinpassen();
         update();
       };
-      teile.addEventListener('change', update);
+      teile.addEventListener('change', () => { keineAbwaehlen(); update(); });
+      check.addEventListener('change', () => { if (check.checked) { keineAbwaehlen(); update(); } });
       box.appendChild(card);
     }
+
+    // Letzte Option „Keine“: schließt alle anderen aus.
+    const keine = document.createElement('div');
+    keine.className = 'aufgabe keine-card';
+    keine.innerHTML = `
+      <label class="aufgabe-head">
+        <input type="checkbox" id="keine-check" value="${KEINE}">
+        <span><strong>Keine</strong><span class="aufgabe-text">Keine Aufgabe muss besprochen werden.</span></span>
+      </label>`;
+    $('aufgaben').appendChild(keine);
+    $('keine-check').onchange = () => {
+      if ($('keine-check').checked) setzeAuswahl([KEINE]);
+      else update();
+    };
     formularFuer = umfrage.kapitel;
+  }
+
+  function keineAbwaehlen() {
+    $('keine-check').checked = false;
+    document.querySelector('.keine-card').classList.remove('selected');
   }
 
   // Zu breite Formeln so weit verkleinern, dass sie ganz sichtbar sind (höchstens auf 60 %).
@@ -72,8 +92,9 @@
   window.addEventListener('resize', formelnEinpassen);
 
   function auswahl() {
+    if ($('keine-check').checked) return [KEINE];
     const out = [];
-    document.querySelectorAll('.aufgabe').forEach((card) => {
+    document.querySelectorAll('.aufgabe:not(.keine-card)').forEach((card) => {
       const check = card.querySelector('.aufgabe-check');
       if (!check.checked) return;
       const teile = [...card.querySelectorAll('.teil-check:checked')].map((c) => c.value);
@@ -83,7 +104,9 @@
   }
 
   function setzeAuswahl(liste) {
-    document.querySelectorAll('.aufgabe').forEach((card) => {
+    $('keine-check').checked = liste.includes(KEINE);
+    document.querySelector('.keine-card').classList.toggle('selected', $('keine-check').checked);
+    document.querySelectorAll('.aufgabe:not(.keine-card)').forEach((card) => {
       const check = card.querySelector('.aufgabe-check');
       const teile = card.querySelectorAll('.teil-check');
       teile.forEach((c) => (c.checked = liste.includes(c.value)));
@@ -101,6 +124,7 @@
 
   // z. B. "1.1 (ganz), 1.3 b, c"
   function beschreibe(liste) {
+    if (liste.includes(KEINE)) return 'Keine';
     const kap = KAPITEL[umfrage.kapitel];
     return kap.aufgaben
       .map((a) => {
@@ -137,6 +161,8 @@
   $('btn-submit').onclick = async () => {
     const liste = auswahl();
     $('btn-submit').disabled = true;
+    $('btn-submit').textContent = 'Wird gespeichert …';
+    $('submit-error').hidden = true;
     try {
       await Backend.abstimmen(code, liste);
       gesendet = liste;
@@ -144,9 +170,16 @@
       render();
       window.scrollTo(0, 0);
     } catch (e) {
-      if (e.message === 'closed') message('Umfrage beendet', 'Ihre Auswahl konnte leider nicht mehr gespeichert werden.');
-      else message('Speichern fehlgeschlagen', 'Bitte versuchen Sie es noch einmal. (' + e.message + ')');
+      if (umfrage && umfrage.status !== 'open') {
+        message('Umfrage beendet', 'Ihre Auswahl konnte leider nicht mehr gespeichert werden.');
+      } else {
+        // Auswahl bleibt erhalten; die Ursache wird angezeigt, damit man sie melden kann.
+        $('submit-error').textContent = `Speichern hat nicht geklappt. Bitte noch einmal versuchen. (Fehler: ${e.code || 'unbekannt'} – ${e.message})`;
+        $('submit-error').hidden = false;
+      }
     }
+    $('btn-submit').textContent = 'Auswahl absenden';
+    update();
   };
   $('btn-edit').onclick = () => {
     bearbeiten = true;

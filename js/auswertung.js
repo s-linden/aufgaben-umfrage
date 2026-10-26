@@ -1,7 +1,13 @@
 // Stimmen auszählen.
 // Eine Stimme ist eine Liste wie ["1.1", "1.3b", "1.3c"]:
-// "1.1" = ganze Aufgabe 1.1, "1.3b" = Teilaufgabe b von 1.3.
+// "1.1" = ganze Aufgabe 1.1, "1.3b" = Teilaufgabe b von 1.3, ["keine"] = keine Aufgabe.
+const KEINE = 'keine';
+
 const Auswertung = (() => {
+  function keine(stimmen) {
+    return stimmen.filter((auswahl) => auswahl.includes(KEINE)).length;
+  }
+
   function zaehlen(kapitel, stimmen) {
     const ergebnis = kapitel.aufgaben.map((a) => {
       let gesamt = 0;
@@ -22,5 +28,5 @@ const Auswertung = (() => {
     return ergebnis.sort((x, y) => y.gesamt - x.gesamt || x.nr.localeCompare(y.nr, 'de', { numeric: true }));
   }
 
-  return { zaehlen };
+  return { zaehlen, keine };
 })();

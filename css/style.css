@@ -226,9 +226,10 @@ button.small { font-size: 0.95rem; padding: 0.35em 0.8em; }
 }
 .result.top { border-left-color: var(--accent); }
 .result.none { opacity: 0.55; }
+.results { --nr-w: clamp(3.6rem, 6.5vw, 6rem); }
 .result-head {
   display: grid;
-  grid-template-columns: 4.5ch 1fr 3ch;
+  grid-template-columns: var(--nr-w) 1fr auto;
   align-items: center;
   gap: 1rem;
 }
@@ -237,6 +238,8 @@ button.small { font-size: 0.95rem; padding: 0.35em 0.8em; }
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
+.result.keine .result-nr { font-size: clamp(1.05rem, 1.9vw, 1.6rem); }
+.result.keine .bar-fill { background: var(--muted); }
 .result-count { text-align: right; }
 .bar-track, .mini-track {
   display: block;
@@ -257,7 +260,7 @@ button.small { font-size: 0.95rem; padding: 0.35em 0.8em; }
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 1.6rem;
-  margin: 0.5rem 0 0 calc(4.5ch + 1rem);
+  margin: 0.5rem 0 0 calc(var(--nr-w) + 1rem);
   font-size: clamp(1rem, 1.6vw, 1.35rem);
   font-variant-numeric: tabular-nums;
 }
@@ -317,4 +320,15 @@ button.small { font-size: 0.95rem; padding: 0.35em 0.8em; }
   text-align: center;
 }
 .submit-bar button { width: 100%; max-width: 40rem; }
+.submit-error { color: var(--error); font-size: 0.9rem; margin: 0 auto 0.6rem; max-width: 40rem; text-align: left; overflow-wrap: anywhere; }
 .done-list { font-size: 1.3rem; font-weight: 700; }
+
+/* Kompaktere Kopfzeile und Zeilen, damit die Auswertung (inkl. „Keine“) auf eine Beamer-Seite passt. */
+.teacher .bar { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.teacher .bar h1 { font-size: clamp(1rem, 1.9vw, 1.6rem); white-space: nowrap; }
+.teacher .bar button, .teacher .bar select { font-size: 0.95rem; padding: 0.4em 0.8em; }
+.teacher .done-head { margin-bottom: 1rem; }
+.teacher .done-head button { font-size: 1rem; padding: 0.4em 0.9em; }
+.result { padding: 0.5rem 0.9rem 0.6rem; }
+.result-teile { margin-top: 0.3rem; }
+@media (max-width: 900px) { .teacher .bar h1 { white-space: normal; } }
