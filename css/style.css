@@ -332,3 +332,18 @@ button.small { font-size: 0.95rem; padding: 0.35em 0.8em; }
 .result { padding: 0.5rem 0.9rem 0.6rem; }
 .result-teile { margin-top: 0.3rem; }
 @media (max-width: 900px) { .teacher .bar h1 { white-space: normal; } }
+
+/* Gemischter Text mit Formeln (Kapitel 2–12) */
+.aufgabe-body { min-width: 0; flex: 1; }
+.aufgabe-text .absatz { display: block; margin-top: 0.15rem; }
+.teile.ohne-teile { display: none !important; }
+.teil-inhalt { flex: 1 1 12rem; min-width: 0; }
+.teil-inhalt .absatz { display: inline; }
+.formel { display: inline-block; vertical-align: middle; }
+.formel.block { display: block; margin: 0.35rem 0; color: var(--text); }
+.formel-inline { white-space: nowrap; }
+.aufgabe-text .formel-inline .katex, .teil-inhalt .formel-inline .katex { font-size: 1.05em; }
+.result.viele-teile .mini-track { display: none; }
+.result.viele-teile .result-teile { gap: 0.2rem 0.9rem; }
+.result.viele-teile .teil { gap: 0.25rem; }
+.result.viele-teile .teil.spitze { color: var(--accent); font-weight: 800; }

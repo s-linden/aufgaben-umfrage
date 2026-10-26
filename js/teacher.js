@@ -68,9 +68,13 @@
         </div>
         <div class="result-teile"></div>`;
       const teile = row.querySelector('.result-teile');
+      // Viele Teilaufgaben (z. B. a–n in Kapitel 10): kompakt nur mit Zahlen, Spitzenreiter hervorgehoben.
+      const anzahl = Object.keys(r.teile).length;
+      row.classList.toggle('viele-teile', anzahl > 8);
+      const spitze = Math.max(0, ...Object.values(r.teile));
       for (const [t, c] of Object.entries(r.teile)) {
         const el = document.createElement('span');
-        el.className = 'teil';
+        el.className = 'teil' + (anzahl > 8 && c > 0 && c === spitze ? ' spitze' : '');
         el.innerHTML = `<b>${t})</b><span class="mini-track"><span class="mini-fill" style="width:${pct(c)}%"></span></span><span>${c}</span>`;
         teile.appendChild(el);
       }

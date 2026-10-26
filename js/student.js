@@ -17,12 +17,37 @@
     show('message');
   }
 
-  function formel(tex) {
+  function formel(tex, klasse = 'formel') {
     const el = document.createElement('span');
-    el.className = 'formel';
+    el.className = klasse;
     if (window.katex) katex.render(tex, el, { throwOnError: false, displayMode: false });
     else el.textContent = tex;
     return el;
+  }
+
+  // Text mit Formeln: $…$ im Text, $$…$$ abgesetzt (eigene Zeile, bei Bedarf verkleinert).
+  // Besteht der Text nur aus einer Formel, wird er wie eine abgesetzte Formel behandelt.
+  function mitFormeln(str, klasse) {
+    const box = document.createElement('span');
+    box.className = klasse;
+    const nurFormel = str.trim().match(/^\$([^$]+)\$$/);
+    if (nurFormel) {
+      box.appendChild(formel(nurFormel[1]));
+      return box;
+    }
+    for (const absatz of str.split(/\n\s*\n/)) {
+      const p = document.createElement('span');
+      p.className = 'absatz';
+      let pos = 0;
+      for (const m of absatz.matchAll(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g)) {
+        p.append(absatz.slice(pos, m.index));
+        p.appendChild(m[1] !== undefined ? formel(m[1], 'formel block') : formel(m[2], 'formel-inline'));
+        pos = m.index + m[0].length;
+      }
+      p.append(absatz.slice(pos));
+      box.appendChild(p);
+    }
+    return box;
   }
 
   function baueFormular(kap) {
@@ -34,17 +59,19 @@
       card.innerHTML = `
         <label class="aufgabe-head">
           <input type="checkbox" class="aufgabe-check" value="${a.nr}">
-          <span><strong>Übung ${a.nr}</strong><span class="aufgabe-text">${a.text}</span></span>
+          <span class="aufgabe-body"><strong>Übung ${a.nr}</strong></span>
         </label>
         <div class="teile" hidden>
           <p class="muted teile-hint">Welche Teilaufgaben? Ohne Auswahl: ganze Aufgabe.</p>
         </div>`;
+      card.querySelector('.aufgabe-body').appendChild(mitFormeln(a.text, 'aufgabe-text'));
       const teile = card.querySelector('.teile');
-      for (const [t, tex] of a.teile) {
+      if (!a.teile.length) teile.classList.add('ohne-teile'); // keine Unterauswahl
+      for (const [t, inhalt] of a.teile) {
         const lab = document.createElement('label');
         lab.className = 'teil-option';
         lab.innerHTML = `<input type="checkbox" class="teil-check" value="${a.nr}${t}"><b>${t})</b>`;
-        lab.appendChild(formel(tex));
+        lab.appendChild(mitFormeln(inhalt, 'teil-inhalt'));
         teile.appendChild(lab);
       }
       const check = card.querySelector('.aufgabe-check');
@@ -83,10 +110,12 @@
 
   // Zu breite Formeln so weit verkleinern, dass sie ganz sichtbar sind (höchstens auf 60 %).
   function formelnEinpassen() {
-    document.querySelectorAll('.teile:not([hidden]) .formel').forEach((el) => {
+    document.querySelectorAll('.formel').forEach((el) => {
+      if (!el.offsetParent) return; // eingeklappt
       el.style.fontSize = '';
-      const faktor = el.clientWidth / el.scrollWidth;
-      if (faktor < 1) el.style.fontSize = Math.max(0.6, faktor * 0.98) + 'rem';
+      if (el.scrollWidth - el.clientWidth <= 4) return; // KaTeX steht oft ein paar Pixel über
+      const minimum = el.classList.contains('block') ? 0.45 : 0.6; // abgesetzte Vektoren/Matrizen dürfen kleiner werden
+      el.style.fontSize = Math.max(minimum, (el.clientWidth / el.scrollWidth) * 0.98) + 'rem';
     });
   }
   window.addEventListener('resize', formelnEinpassen);
@@ -148,6 +177,9 @@
     if (formularFuer !== umfrage.kapitel) {
       baueFormular(kap);
       if (gesendet) setzeAuswahl(gesendet);
+      // Formeln im Aufgabentext sind sofort sichtbar; nach dem Laden der Formel-Schrift neu einpassen.
+      requestAnimationFrame(formelnEinpassen);
+      document.fonts && document.fonts.ready.then(formelnEinpassen);
     }
     $('vote-kapitel').textContent = kap.titel;
     if (gesendet && !bearbeiten) {
@@ -185,6 +217,7 @@
     bearbeiten = true;
     setzeAuswahl(gesendet);
     render();
+    formelnEinpassen(); // erst jetzt sichtbar
   };
 
   if (!code) return message('Kein Umfrage-Code', 'Bitte scannen Sie den QR-Code am Beamer.');

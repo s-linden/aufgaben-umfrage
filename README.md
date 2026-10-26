@@ -12,8 +12,16 @@ Weitere Knöpfe: **Umfrage beenden / wieder öffnen**, **Neue Umfrage** (neuer Q
 
 ## Aufgaben ändern oder neues Kapitel ergänzen
 
-Alle Aufgaben stehen in [`js/aufgaben.js`](js/aufgaben.js), Formeln in LaTeX. Ein neues Kapitel ist ein weiterer Eintrag nach demselben Muster.
-Es erscheint dann automatisch in der Kapitelauswahl am Beamer.
+Alle Aufgaben der Kapitel 1–12 stehen in [`js/aufgaben.js`](js/aufgaben.js), Formeln in LaTeX zwischen `$…$`.
+Die Datei wird aus den „Übungen zum Selbststudium“ des Skripts (`chapterXX/chapterXX_sec07.md`) erzeugt. Hinweise, Tipps und Lösungen werden dabei weggelassen.
+Ändern sich die Übungen im Skript, lässt sich die Datei neu erzeugen:
+
+```bash
+python3 werkzeuge/aufgaben-aus-skript.py "../../04 WS26:27/99 Skript/mathematik-1-grundlagen" js/aufgaben.js
+```
+
+Einzelne Aufgaben kann man auch direkt in `js/aufgaben.js` anpassen. Das wird beim nächsten Neuerzeugen aber überschrieben.
+Übungen ohne Teilaufgaben (`teile: []`) lassen sich nur als Ganzes wählen.
 
 ## Ausprobieren ohne Einrichtung (Demo-Modus)
 
