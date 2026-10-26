@@ -33,6 +33,19 @@ Wie beim Zufallsgruppen-Generator: ein kostenloses Firebase-Projekt (Spark-Tarif
 **Datenschutz:** Gespeichert werden nur zufällige Geräte-IDs und die gewählten Aufgabennummern, keine Namen.
 Die einzelnen Stimmen kann nur die Lehrperson lesen, die die Umfrage gestartet hat.
 
+> Eingerichtet ist das eigene Firebase-Projekt `aufgaben-umfrage`: Firestore in `europe-west3`, anonyme Anmeldung aktiv, `s-linden.github.io` als Domain freigegeben, Gemini und Analytics aus.
+> Wer die Regeln in `firestore.rules` ändert, muss sie in der Konsole erneut einfügen und veröffentlichen.
+
+### API-Schlüssel
+
+Der `apiKey` in `js/config.js` ist absichtlich öffentlich, wie bei jeder Firebase-Web-App. GitHub meldet ihn eventuell trotzdem als „Secret“. Diese Warnung kann mit „Won't fix“ geschlossen werden.
+Damit er nicht anderswo missbraucht werden kann, ist er in der [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=aufgaben-umfrage) („Browser key (auto created by Firebase)“) eingeschränkt.
+
+- **Websites:** `https://s-linden.github.io/*`, `http://localhost:8766/*`, `https://aufgaben-umfrage.firebaseapp.com/*`
+- **Dienste:** die 25 Firebase-Dienste, die Firebase voreingestellt hat (u. a. Identity Toolkit, Token Service, Cloud Firestore)
+
+Läuft das Tool künftig unter einer anderen Adresse oder einem anderen lokalen Port, muss diese dort unter „Website-Einschränkungen“ ergänzt werden. Bis Änderungen greifen, kann es bis zu 5 Minuten dauern.
+
 ## Aufbau
 
 | Datei | Inhalt |
