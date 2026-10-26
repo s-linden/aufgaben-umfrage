@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// Regeln für die Aufgaben-Umfrage.
+// In der Firebase-Konsole unter Firestore Database → Regeln einfügen und veröffentlichen.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /umfragen/{code} {
+      function signedIn() { return request.auth != null; }
+      function umfrage() { return get(/databases/$(database)/documents/umfragen/$(code)).data; }
+
+      // Jede angemeldete (auch anonyme) Person darf eine Umfrage lesen, wenn sie den Code kennt.
+      allow get: if signedIn();
+      // Nur die Lehrperson, die die Umfrage angelegt hat, darf sie ändern.
+      allow create: if signedIn()
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.kapitel is string;
+      allow update: if signedIn()
+        && resource.data.owner == request.auth.uid
+        && request.resource.data.owner == resource.data.owner;
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+
+      // Jedes Gerät hat genau eine Stimme (Dokument-ID = eigene Kennung) und darf sie ändern,
+      // solange die Umfrage läuft. Alle Stimmen sieht nur die Lehrperson.
+      match /stimmen/{uid} {
+        allow get: if signedIn() && (request.auth.uid == uid || umfrage().owner == request.auth.uid);
+        allow list: if signedIn() && umfrage().owner == request.auth.uid;
+        allow create, update: if signedIn()
+          && request.auth.uid == uid
+          && umfrage().status == 'open'
+          && request.resource.data.keys().hasOnly(['auswahl', 'at'])
+          && request.resource.data.auswahl is list
+          && request.resource.data.auswahl.size() > 0
+          && request.resource.data.auswahl.size() <= 60
+          && request.resource.data.at == request.time;
+      }
+    }
+  }
+}

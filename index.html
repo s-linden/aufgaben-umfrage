@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aufgaben-Umfrage</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="teacher">
+  <header class="bar">
+    <h1>Welche Aufgaben besprechen wir?</h1>
+    <div class="bar-actions">
+      <select id="kapitel" aria-label="Kapitel"></select>
+      <button id="btn-toggle" class="ghost">Auswertung</button>
+      <button id="btn-fullscreen" class="ghost">Vollbild</button>
+      <button id="btn-new" class="ghost">Neue Umfrage</button>
+    </div>
+  </header>
+
+  <div id="demo-banner" class="demo" hidden>
+    <strong>Demo-Modus:</strong> läuft nur in diesem Browser.
+    <a id="demo-phone" target="_blank" rel="noopener">Handy-Ansicht in neuem Tab öffnen</a>
+    <button id="btn-fake" class="small">+5 Test-Stimmen</button>
+  </div>
+
+  <main>
+    <section id="view-loading" class="center"><p class="muted">Verbinde …</p></section>
+
+    <section id="view-error" class="center" hidden>
+      <p id="error-text" class="error"></p>
+    </section>
+
+    <section id="view-qr" class="open-grid" hidden>
+      <div class="qr-panel">
+        <div id="qr" class="qr"></div>
+        <p class="join-hint">Mit dem Handy scannen oder öffnen:<br><span id="join-url" class="join-url"></span></p>
+        <p class="join-code">Code <span id="join-code"></span></p>
+      </div>
+      <div class="count-panel">
+        <p id="kapitel-titel" class="preview"></p>
+        <div id="count" class="count">0</div>
+        <div id="count-label" class="count-label">Stimmen abgegeben</div>
+        <p id="status-text" class="preview"></p>
+        <button id="btn-results" class="primary big">Auswertung zeigen</button>
+      </div>
+    </section>
+
+    <section id="view-results" hidden>
+      <div class="done-head">
+        <p id="results-summary" class="done-summary"></p>
+        <div class="done-actions">
+          <button id="btn-close">Umfrage beenden</button>
+        </div>
+      </div>
+      <p class="muted legend">Balken: Anteil der Stimmen. Wer „ganze Aufgabe“ gewählt hat, zählt bei allen Teilaufgaben mit.</p>
+      <div id="results" class="results"></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/aufgaben.js"></script>
+  <script src="js/auswertung.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/teacher.js"></script>
+</body>
+</html>

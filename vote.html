@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aufgaben-Umfrage</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="student vote">
+  <main>
+    <section id="view-loading" class="card"><p class="muted">Lade Umfrage …</p></section>
+
+    <section id="view-message" class="card" hidden>
+      <h1 id="msg-title"></h1>
+      <p id="msg-text"></p>
+    </section>
+
+    <section id="view-form" hidden>
+      <header class="vote-head">
+        <h1>Welche Aufgaben sollen in der Übung besprochen werden?</h1>
+        <p class="muted"><span id="vote-kapitel"></span> · Mehrfachauswahl möglich. Ohne Auswahl einer Teilaufgabe gilt die ganze Aufgabe.</p>
+      </header>
+      <div id="aufgaben" class="aufgaben"></div>
+      <div class="submit-bar">
+        <button id="btn-submit" class="primary big" disabled>Auswahl absenden</button>
+      </div>
+    </section>
+
+    <section id="view-done" class="card" hidden>
+      <h1>Danke!</h1>
+      <p>Ihre Auswahl wurde gespeichert:</p>
+      <p id="done-summary" class="done-list"></p>
+      <p class="muted">Solange die Umfrage läuft, können Sie Ihre Auswahl noch ändern.</p>
+      <button id="btn-edit">Auswahl ändern</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/aufgaben.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/student.js"></script>
+</body>
+</html>
